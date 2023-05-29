@@ -20,7 +20,7 @@ require("dotenv").config() // here is the env config
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_EMAIL}:${process.env.DB_PASS}@cluster0.onk7lrw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -56,7 +56,7 @@ async function run() {
             const cursor = DB1.find()
 
             const result = await cursor.toArray()
-            
+
             res.send(result)
         })
 
@@ -64,7 +64,61 @@ async function run() {
 
 
 
+        // here is the cart cursor
 
+
+        app.get('/carts', async (req, res) => {
+
+            // first get  the email by params
+            const email = req.query.email
+
+            console.log(email);
+
+
+            // then if email is not getting when shew the empty array
+
+            if (!email) {
+
+                res.send([]);
+            }
+            // then make a query get the email form the database then 
+
+            const query = { email: email };
+
+            // make a cursor  find and set the query finding the  email  
+
+            const result = await DB2.find(query).toArray() // make thin in array formate 
+
+            res.send(result)
+
+
+        })
+
+
+        // here is the cart cursor ends
+
+
+        // here is the post method of the cart database
+        app.post("/carts", async (req, res) => {
+            const cart = req.body
+
+            const result = await DB2.insertOne(cart)
+            res.send(result)
+        })
+
+
+        // here is the post method of the cart database ends
+
+        app.delete("/carts/:id", async (req, res) => {
+
+            const id = req.params.idg
+
+            const filter = { _id: new ObjectId(id) }
+
+            const result = await DB2.deleteOne(filter)
+            res.send(result)
+
+        })
 
 
 
